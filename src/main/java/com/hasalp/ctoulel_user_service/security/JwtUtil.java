@@ -41,13 +41,15 @@ public class JwtUtil {
         return username -> {
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getEmail())
                     .password(user.getPassword())
-                    .authorities(List.of()) // ou map tes rôles ici
+                    .authorities("ROLE_" + user.getRole().getName())
                     .build();
         };
     }
+
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {

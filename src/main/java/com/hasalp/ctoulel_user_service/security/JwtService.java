@@ -1,5 +1,6 @@
 package com.hasalp.ctoulel_user_service.security;
 
+import com.hasalp.ctoulel_user_service.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,13 +35,29 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generationToken(new HashMap<>(), userDetails);
+//    public String generateToken(UserDetails userDetails) {
+//        return generationToken(new HashMap<>(), userDetails);
+//    }
+
+    public String generateToken(User user) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", List.of(user.getRole().getName()));
+        claims.put("email", user.getEmail());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getUserId().toString())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
-    public String generationToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
-    }
+
+//    public String generationToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+//        return buildToken(extraClaims, userDetails, jwtExpiration);
+//    }
 
     public long getExpirationTime() {
         return jwtExpiration;

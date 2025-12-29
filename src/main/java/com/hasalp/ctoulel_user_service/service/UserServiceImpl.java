@@ -99,10 +99,13 @@ public class UserServiceImpl implements UserService{
         User user = repository.findByEmail(userDto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
-        System.out.println("nnnn==>"+userDetails);
-        String jwtToken = jwtService.generateToken(userDetails);
+//        System.out.println("nnnn==>"+userDetails);
+//        String jwtToken = jwtService.generateToken(userDetails);
+
+        String jwtToken = jwtService.generateToken(user);
+
 
         return AuthResponseDTO.builder()
                 .token(jwtToken)
