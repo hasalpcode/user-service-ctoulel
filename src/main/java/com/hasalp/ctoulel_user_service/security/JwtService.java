@@ -47,7 +47,8 @@ public class JwtService {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getUserId().toString())
+//                .setSubject(user.getUserId().toString()) // id unique du token via le idUser
+                .setSubject(user.getEmail()) // id unique du token via le email du user
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -59,24 +60,24 @@ public class JwtService {
 //        return buildToken(extraClaims, userDetails, jwtExpiration);
 //    }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
-    }
-
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
-    ) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+//    public long getExpirationTime() {
+//        return jwtExpiration;
+//    }
+//
+//    private String buildToken(
+//            Map<String, Object> extraClaims,
+//            UserDetails userDetails,
+//            long expiration
+//    ) {
+//        return Jwts
+//                .builder()
+//                .setClaims(extraClaims)
+//                .setSubject(userDetails.getUsername())
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+//                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+//                .compact();
+//    }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

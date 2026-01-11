@@ -87,7 +87,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public AuthResponseDTO login(UserRequestDTO userDto) {
-        System.out.println("xxxx==>"+userDto.getUsername()+"==>"+userDto.getPassword()+"==>"+userDto.getEmail());
         authenticationManager.authenticate(
 
                 new UsernamePasswordAuthenticationToken(
@@ -99,12 +98,9 @@ public class UserServiceImpl implements UserService{
         User user = repository.findByEmail(userDto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-
-//        System.out.println("nnnn==>"+userDetails);
-//        String jwtToken = jwtService.generateToken(userDetails);
-
+        System.out.println("userrrr==>"+mapper.toDTO(user));
         String jwtToken = jwtService.generateToken(user);
+
 
 
         return AuthResponseDTO.builder()
