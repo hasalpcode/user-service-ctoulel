@@ -22,7 +22,9 @@ public class UserDao {
     public List<User> getUsers() {
         return repo.findAll();
     }
-
+    public List<User> findAllById(List<Long> id) {
+        return repo.findAll();
+    }
 
     public Optional<User> findByEmail(String email) {
         return repo.findByEmail(email);

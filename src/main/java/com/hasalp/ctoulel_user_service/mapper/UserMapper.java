@@ -1,7 +1,7 @@
 package com.hasalp.ctoulel_user_service.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.hasalp.ctoulel_user_service.dto.UserRequest;
+import org.mapstruct.*;
 import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
 import com.hasalp.ctoulel_user_service.model.Role;
@@ -13,6 +13,9 @@ public interface UserMapper {
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "role", source = "role")
     User toEntity(UserRequestDTO dto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromDto(UserRequest dto, @MappingTarget User user);
 
     @Mapping(target = "role", source = "role")
     UserResponseDTO toDTO(User user);

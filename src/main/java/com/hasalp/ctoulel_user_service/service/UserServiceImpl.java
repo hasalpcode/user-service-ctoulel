@@ -2,6 +2,7 @@ package com.hasalp.ctoulel_user_service.service;
 
 import com.hasalp.ctoulel_user_service.dao.UserDao;
 import com.hasalp.ctoulel_user_service.dto.AuthResponseDTO;
+import com.hasalp.ctoulel_user_service.dto.UserRequest;
 import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
 import com.hasalp.ctoulel_user_service.exception.ResourceExistsException;
@@ -12,6 +13,7 @@ import com.hasalp.ctoulel_user_service.model.User;
 import com.hasalp.ctoulel_user_service.repository.RoleRepository;
 import com.hasalp.ctoulel_user_service.repository.UserRepository;
 import com.hasalp.ctoulel_user_service.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,6 +61,29 @@ public class UserServiceImpl implements UserService{
         return mapper.toDTO(u);
     }
 
+    @Transactional
+    public UserResponseDTO update(Long userId, UserRequest dto) {
+
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User introuvable"));
+
+        mapper.updateFromDto(dto, user);
+
+//        if (dto.posteId() != null) {
+//            Poste poste = posteRepository.findById(dto.posteId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("Poste introuvable"));
+//            membre.setPoste(poste);
+//        }
+
+//        if (dto.username() != null || dto.email() != null) {
+//            userClient.updateUser(
+//                    membre.getUserId(),
+//                    new userRequest(dto.username(), dto.email())
+//            );
+//        }
+        return mapper.toDTO(user);
+    }
+
     @Override
     public List<UserResponseDTO> getUsers() {
         List<User> users = repository.getUsers();
@@ -69,6 +94,13 @@ public class UserServiceImpl implements UserService{
         }
 
         return users.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserResponseDTO> findByIds(List<Long> ids) {
+        return repository.findAllById(ids).stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
