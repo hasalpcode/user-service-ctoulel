@@ -17,4 +17,16 @@ public class GlobalExceptionHandler {
     public String handleNotFound(ResourceNotFoundException ex) {
         return ex.getMessage();
     }
+
+    @ExceptionHandler(InvalidResetTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidResetToken(InvalidResetTokenException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleRuntimeException(RuntimeException ex) {
+        return ex.getMessage();
+    }
 }

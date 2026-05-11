@@ -2,6 +2,9 @@ package com.hasalp.ctoulel_user_service.service;
 
 import com.hasalp.ctoulel_user_service.dao.UserDao;
 import com.hasalp.ctoulel_user_service.dto.AuthResponseDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetRequestDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetResponseDTO;
 import com.hasalp.ctoulel_user_service.dto.UserRequest;
 import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
@@ -23,7 +26,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -138,6 +143,70 @@ public class UserServiceImpl implements UserService{
         return AuthResponseDTO.builder()
                 .token(jwtToken)
                 .user(mapper.toDTO(user))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public PasswordResetResponseDTO requestPasswordReset(PasswordResetRequestDTO request) {
+        User user = repository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur avec l'email " + request.getEmail() + " non trouvé"));
+
+        // Générer un token unique pour la réinitialisation
+        String resetToken = UUID.randomUUID().toString();
+        
+        // Définir l'expiration du token à 24 heures
+        LocalDateTime expiryTime = LocalDateTime.now().plusHours(24);
+
+        user.setResetToken(resetToken);
+        user.setResetTokenExpiry(expiryTime);
+        repository.save(user);
+
+        log.info("Token de réinitialisation généré pour l'utilisateur: {}", request.getEmail());
+
+        return PasswordResetResponseDTO.builder()
+                .success(true)
+                .message("Un lien de réinitialisation a été envoyé à votre email")
+                .resetToken(resetToken)  // À envoyer par email en production
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public PasswordResetResponseDTO resetPassword(PasswordResetDTO request) {
+        // Valider que les deux mot de passes correspondent
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Les mots de passe ne correspondent pas");
+        }
+
+        // Valider la longueur minimale du mot de passe
+        if (request.getNewPassword().length() < 4) {
+            throw new RuntimeException("Le mot de passe doit contenir au moins 6 caractères");
+        }
+
+        // Trouver l'utilisateur par token
+        User user = repository.findByResetToken(request.getToken())
+                .orElseThrow(() -> new com.hasalp.ctoulel_user_service.exception.InvalidResetTokenException("Token de réinitialisation invalide"));
+
+        // Vérifier que le token n'a pas expiré
+        if (user.getResetTokenExpiry() == null || LocalDateTime.now().isAfter(user.getResetTokenExpiry())) {
+            throw new com.hasalp.ctoulel_user_service.exception.InvalidResetTokenException("Le token de réinitialisation a expiré");
+        }
+
+        // Encoder et définir le nouveau mot de passe
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        
+        // Nettoyer le token après utilisation
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        
+        repository.save(user);
+
+        log.info("Mot de passe réinitialisé avec succès pour l'utilisateur: {}", user.getEmail());
+
+        return PasswordResetResponseDTO.builder()
+                .success(true)
+                .message("Votre mot de passe a été réinitialisé avec succès")
                 .build();
     }
 

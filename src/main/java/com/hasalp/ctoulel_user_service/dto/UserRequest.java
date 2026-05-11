@@ -14,7 +14,7 @@ public class UserRequest {
 
 
 
-    @Email
+//    @Email
     @Nullable
     private String email;
 

@@ -33,6 +33,12 @@ public class User {
     private String password;
     private LocalDateTime dateInscription = LocalDateTime.now();
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id") // la colonne qui stocke le rôle dans la table user
     private Role role;

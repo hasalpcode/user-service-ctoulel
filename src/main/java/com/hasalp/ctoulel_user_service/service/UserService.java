@@ -1,6 +1,9 @@
 package com.hasalp.ctoulel_user_service.service;
 
 import com.hasalp.ctoulel_user_service.dto.AuthResponseDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetRequestDTO;
+import com.hasalp.ctoulel_user_service.dto.PasswordResetResponseDTO;
 import com.hasalp.ctoulel_user_service.dto.UserRequest;
 import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
@@ -16,4 +19,8 @@ public interface UserService {
     List<UserResponseDTO> findByIds(List<Long> id);
     AuthResponseDTO login(UserRequestDTO dto);
     void deleteUser(Long id);
+    
+    // Méthodes pour la réinitialisation de mot de passe
+    PasswordResetResponseDTO requestPasswordReset(PasswordResetRequestDTO request);
+    PasswordResetResponseDTO resetPassword(PasswordResetDTO request);
 }

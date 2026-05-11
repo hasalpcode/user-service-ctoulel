@@ -40,4 +40,8 @@ public class UserDao {
     public void delete(Long id) {
          repo.deleteById(id);
     }
+
+    public Optional<User> findByResetToken(String resetToken) {
+        return repo.findByResetToken(resetToken);
+    }
 }
