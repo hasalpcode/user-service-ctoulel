@@ -37,6 +37,11 @@ public class UserController {
             dto) {
         return service.update(userId, dto);
     }
+    @PatchMapping("/{userId}/role/{roleId}")
+    public UserResponseDTO updateUserRole(@PathVariable Long userId, @PathVariable Long roleId) {
+        return service.updateUserRole(userId, roleId);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         service.deleteUser(id);

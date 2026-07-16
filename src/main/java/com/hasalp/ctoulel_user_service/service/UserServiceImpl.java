@@ -90,6 +90,20 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
+    public UserResponseDTO updateUserRole(Long userId, Long roleId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role introuvable"));
+
+        user.setRole(role);
+
+        return mapper.toDTO(repository.save(user));
+    }
+
+    @Override
     public List<UserResponseDTO> getUsers() {
         List<User> users = repository.getUsers();
 

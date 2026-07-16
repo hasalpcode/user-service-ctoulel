@@ -15,6 +15,7 @@ public interface UserService {
     UserResponseDTO getById(Long id);
     List<UserResponseDTO> getUsers();
     UserResponseDTO update(Long userId, UserRequest dto);
+    UserResponseDTO updateUserRole(Long userId, Long roleId);
 
     List<UserResponseDTO> findByIds(List<Long> id);
     AuthResponseDTO login(UserRequestDTO dto);
