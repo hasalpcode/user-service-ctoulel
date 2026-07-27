@@ -7,6 +7,8 @@ security:
     expiration-time: ${JWT_EXPIRATION:3600000} # 1h
 
 spring:
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
   application:
     name: user-service
 
