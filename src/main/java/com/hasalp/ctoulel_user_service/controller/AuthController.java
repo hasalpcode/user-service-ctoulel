@@ -4,8 +4,10 @@ import com.hasalp.ctoulel_user_service.dto.AuthResponseDTO;
 import com.hasalp.ctoulel_user_service.dto.PasswordResetDTO;
 import com.hasalp.ctoulel_user_service.dto.PasswordResetRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.PasswordResetResponseDTO;
+import com.hasalp.ctoulel_user_service.dto.SignupRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
+import com.hasalp.ctoulel_user_service.service.OnboardingService;
 import com.hasalp.ctoulel_user_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +23,16 @@ import java.util.UUID;
 public class AuthController {
 
     private final UserService service;
+    private final OnboardingService onboardingService;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody UserRequestDTO request) {
         return ResponseEntity.ok(service.register(request));
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<AuthResponseDTO> signup(@Valid @RequestBody SignupRequestDTO request) {
+        return ResponseEntity.ok(onboardingService.signup(request));
     }
 
     @PostMapping("/login")
