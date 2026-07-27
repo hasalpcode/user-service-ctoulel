@@ -9,6 +9,7 @@ import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
     UserResponseDTO register(UserRequestDTO dto);
@@ -18,7 +19,7 @@ public interface UserService {
     UserResponseDTO updateUserRole(Long userId, Long roleId);
 
     List<UserResponseDTO> findByIds(List<Long> id);
-    AuthResponseDTO login(UserRequestDTO dto);
+    AuthResponseDTO login(UserRequestDTO dto, UUID tenantId);
     void deleteUser(Long id);
     
     // Méthodes pour la réinitialisation de mot de passe

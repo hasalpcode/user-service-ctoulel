@@ -10,9 +10,13 @@ import com.hasalp.ctoulel_user_service.dto.UserRequestDTO;
 import com.hasalp.ctoulel_user_service.dto.UserResponseDTO;
 import com.hasalp.ctoulel_user_service.exception.ResourceExistsException;
 import com.hasalp.ctoulel_user_service.exception.ResourceNotFoundException;
+import com.hasalp.ctoulel_user_service.exception.TenantAccessDeniedException;
 import com.hasalp.ctoulel_user_service.mapper.UserMapper;
+import com.hasalp.ctoulel_user_service.model.Membership;
+import com.hasalp.ctoulel_user_service.model.MembershipStatus;
 import com.hasalp.ctoulel_user_service.model.Role;
 import com.hasalp.ctoulel_user_service.model.User;
+import com.hasalp.ctoulel_user_service.repository.MembershipRepository;
 import com.hasalp.ctoulel_user_service.repository.RoleRepository;
 import com.hasalp.ctoulel_user_service.repository.UserRepository;
 import com.hasalp.ctoulel_user_service.security.JwtService;
@@ -38,6 +42,7 @@ public class UserServiceImpl implements UserService{
     private final UserDao repository;
     private final UserRepository repos;
     private final RoleRepository roleRepository;
+    private final MembershipRepository membershipRepository;
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -137,7 +142,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public AuthResponseDTO login(UserRequestDTO userDto) {
+    public AuthResponseDTO login(UserRequestDTO userDto, UUID tenantId) {
         authenticationManager.authenticate(
 
                 new UsernamePasswordAuthenticationToken(
@@ -145,14 +150,21 @@ public class UserServiceImpl implements UserService{
                         userDto.getPassword()
                 )
         );
-        System.out.println("xxxx==>"+userDto);
         User user = repository.findByEmail(userDto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
-        System.out.println("userrrr==>"+mapper.toDTO(user));
-        String jwtToken = jwtService.generateToken(user);
+        String tenantRole = null;
+        if (!user.isSuperAdmin()) {
+            if (tenantId == null) {
+                throw new TenantAccessDeniedException("Tenant manquant");
+            }
+            Membership membership = membershipRepository.findByTenantIdAndUserId(tenantId, user.getUserId())
+                    .filter(m -> m.getStatus() == MembershipStatus.ACTIVE)
+                    .orElseThrow(() -> new TenantAccessDeniedException("Aucun accès à ce tenant"));
+            tenantRole = membership.getRole().getName();
+        }
 
-
+        String jwtToken = jwtService.generateToken(user, tenantId, tenantRole);
 
         return AuthResponseDTO.builder()
                 .token(jwtToken)

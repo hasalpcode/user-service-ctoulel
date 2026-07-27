@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -39,11 +40,16 @@ public class JwtService {
 //        return generationToken(new HashMap<>(), userDetails);
 //    }
 
-    public String generateToken(User user) {
+    public String generateToken(User user, UUID tenantId, String tenantRole) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", List.of(user.getRole().getName()));
         claims.put("email", user.getEmail());
+        claims.put("isSuperAdmin", user.isSuperAdmin());
+        if (tenantId != null) {
+            claims.put("tenantId", tenantId.toString());
+            claims.put("role", tenantRole);
+        }
 
         return Jwts.builder()
                 .setClaims(claims)

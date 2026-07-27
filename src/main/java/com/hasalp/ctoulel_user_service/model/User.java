@@ -43,6 +43,8 @@ public class User {
     @JoinColumn(name = "role_id") // la colonne qui stocke le rôle dans la table user
     private Role role;
 
+    private boolean isSuperAdmin;
+
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createdAt;

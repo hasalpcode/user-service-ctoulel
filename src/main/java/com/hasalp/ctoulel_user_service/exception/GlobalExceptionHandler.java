@@ -24,6 +24,12 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
+    @ExceptionHandler(TenantAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleTenantAccessDenied(TenantAccessDeniedException ex) {
+        return ex.getMessage();
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleRuntimeException(RuntimeException ex) {
