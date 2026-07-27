@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,9 +28,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody UserRequestDTO request) {
-//        AuthResponseDTO
-        return ResponseEntity.ok(service.login(request));
+    public ResponseEntity<AuthResponseDTO> login(
+            @RequestBody UserRequestDTO request,
+            @RequestHeader(value = "X-Tenant-Id", required = false) UUID tenantId) {
+        return ResponseEntity.ok(service.login(request, tenantId));
     }
 
     @PostMapping("/forgot-password")
