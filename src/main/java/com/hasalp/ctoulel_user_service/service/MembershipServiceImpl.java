@@ -62,4 +62,18 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipRepository.findByTenantIdAndUserId(tenantId, userId)
                 .map(MembershipResponse::from);
     }
+
+    @Override
+    @Transactional
+    public MembershipResponse updateRole(UUID tenantId, Long userId, Long roleId) {
+        Membership membership = membershipRepository.findByTenantIdAndUserId(tenantId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Aucun membership pour l'utilisateur " + userId + " sur ce tenant"));
+
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role introuvable: " + roleId));
+
+        membership.setRole(role);
+        return MembershipResponse.from(membershipRepository.save(membership));
+    }
 }

@@ -45,4 +45,16 @@ public class MembershipController {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Aucun acces pour l'utilisateur " + userId + " sur le tenant " + tenantId));
     }
+
+    /**
+     * Change le role d'un membre au sein d'un tenant (ex: promotion
+     * USER -> COMPTABLE) - distinct de PATCH /users/{id}/role/{roleId} qui
+     * ne touche que le role global historique, sans effet sur les droits
+     * reels par tenant.
+     */
+    @PatchMapping("/tenant/{tenantId}/user/{userId}/role/{roleId}")
+    public MembershipResponse updateRole(
+            @PathVariable UUID tenantId, @PathVariable Long userId, @PathVariable Long roleId) {
+        return membershipService.updateRole(tenantId, userId, roleId);
+    }
 }

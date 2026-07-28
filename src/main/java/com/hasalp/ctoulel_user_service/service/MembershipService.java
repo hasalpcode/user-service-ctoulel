@@ -12,4 +12,5 @@ public interface MembershipService {
     List<MembershipResponse> findByUserId(Long userId);
     List<MembershipResponse> findByTenantId(UUID tenantId);
     Optional<MembershipResponse> findByTenantIdAndUserId(UUID tenantId, Long userId);
+    MembershipResponse updateRole(UUID tenantId, Long userId, Long roleId);
 }

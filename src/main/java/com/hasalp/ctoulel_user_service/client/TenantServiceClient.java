@@ -45,6 +45,17 @@ public class TenantServiceClient {
                 .toBodilessEntity();
     }
 
+    /**
+     * Utilise pour resoudre automatiquement le tenant d'un utilisateur au
+     * login (POST /auth/resolve-tenant), a partir de ses Membership actifs.
+     */
+    public TenantInfo getTenant(UUID tenantId) {
+        return restClient.get()
+                .uri("/api/tenants/{tenantId}", tenantId)
+                .retrieve()
+                .body(TenantInfo.class);
+    }
+
     private record TenantCreateRequest(String name, String subdomain) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,4 +64,7 @@ public class TenantServiceClient {
     private record TenantOwnerUpdateRequest(Long ownerUserId) {}
 
     private record SubscriptionCreateRequest(UUID tenantId, UUID planId) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record TenantInfo(UUID tenantId, String name, String subdomain) {}
 }
