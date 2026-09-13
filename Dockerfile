@@ -18,8 +18,7 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8081
 ENTRYPOINT ["sh", "-c", "java -jar app.jar \
 --server.port=${PORT:-8081} \
-
---eureka.instance.prefer-ip-address=false \
+--eureka.client.serviceUrl.defaultZone=${EUREKA_URI:-http://localhost:8761/eureka/} \
 --spring.datasource.url=${DB_URL:-jdbc:mysql://localhost:8889/ong_users_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false} \
 --spring.datasource.username=${DB_USERNAME:-root} \
 --spring.datasource.password=${DB_PASSWORD:-root} \
